@@ -1,6 +1,7 @@
 import { BeatIndicator } from './components/BeatIndicator';
 import { BpmControl } from './components/BpmControl';
 import { ExportPanel } from './components/ExportPanel';
+import { PresetManager } from './components/PresetManager';
 import { SoundPresetControl } from './components/SoundPresetControl';
 import { SubdivisionControl } from './components/SubdivisionControl';
 import { TimeSignatureControl } from './components/TimeSignatureControl';
@@ -78,6 +79,8 @@ export function MetronomeTool(): React.JSX.Element {
           />
         </CardContent>
       </Card>
+
+      <PresetManager settings={settings} onLoad={loaded => setSettings({ ...DEFAULT_SETTINGS, ...loaded })} />
 
       <Card className="lg:col-span-2">
         <CardHeader>

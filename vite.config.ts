@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
         includeAssets: ['favicon.svg'],
         manifest: {
           name: "Musician's Toolbox",
-          short_name: 'Toolbox',
+          short_name: "Musician's Toolbox",
           description:
             'A growing set of browser-based tools for musicians, including a metronome with WAV click-track export.',
           theme_color: '#0b0f19',

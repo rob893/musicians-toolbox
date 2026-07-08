@@ -37,6 +37,18 @@ export interface MetronomeSettings {
   subdivision: Subdivision;
 }
 
+/** A named metronome configuration saved to localStorage. */
+export interface SavedMetronomePreset {
+  /** Unique identifier. */
+  id: string;
+  /** User-provided display name. */
+  name: string;
+  /** Captured metronome settings. */
+  settings: MetronomeSettings;
+  /** Creation timestamp (epoch ms). */
+  createdAt: number;
+}
+
 /**
  * Tunable synthesis parameters for a click preset. The same parameters drive
  * both live playback and offline (export) rendering so the file matches what

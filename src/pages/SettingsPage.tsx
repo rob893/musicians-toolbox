@@ -1,7 +1,8 @@
+import { InstallControl } from '@/components/InstallControl';
 import { ThemeControl } from '@/components/ThemeControl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-/** Settings page: appearance/theme controls (mode + palette colours). */
+/** Settings page: appearance/theme controls and app installation. */
 export function SettingsPage(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-6">
@@ -17,6 +18,16 @@ export function SettingsPage(): React.JSX.Element {
         </CardHeader>
         <CardContent>
           <ThemeControl />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Install app</CardTitle>
+          <CardDescription>Install Musician&apos;s Toolbox for offline use and a home-screen icon.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <InstallControl />
         </CardContent>
       </Card>
     </div>

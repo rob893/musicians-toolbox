@@ -5,6 +5,7 @@ import { audioBufferToWav } from '@/audio/wavEncoder';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { isIOS } from '@/lib/pwaInstall';
 import { beatDurationSeconds, clamp } from '@/lib/tempo';
 import { cn } from '@/lib/utils';
 import type { MetronomeSettings } from '@/types/metronome';
@@ -56,14 +57,40 @@ export function ExportPanel({ settings }: ExportPanelProps): React.JSX.Element {
     try {
       const buffer = await renderClickTrack({ settings, durationSeconds });
       const blob = audioBufferToWav(buffer);
+      const filename = `click-${settings.bpm}bpm-${settings.beatsPerMeasure}-${settings.denominator}.wav`;
+
+      // iOS Safari ignores the anchor `download` attribute, so use the native
+      // share sheet (Save to Files / share) when the file can be shared.
+      if (isIOS()) {
+        const file = new File([blob], filename, { type: 'audio/wav' });
+        const nav = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
+        if (nav.canShare?.({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file], title: filename });
+            return;
+          } catch (err) {
+            // User cancelled the share sheet — leave without falling back.
+            if (err instanceof DOMException && err.name === 'AbortError') {
+              return;
+            }
+            // Otherwise fall through to the download path below.
+          }
+        }
+      }
+
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
-      anchor.download = `click-${settings.bpm}bpm-${settings.beatsPerMeasure}-${settings.denominator}.wav`;
+      anchor.download = filename;
+      anchor.style.display = 'none';
       document.body.appendChild(anchor);
       anchor.click();
-      anchor.remove();
-      URL.revokeObjectURL(url);
+      // Defer cleanup: revoking the object URL synchronously after click truncates
+      // the download to an empty/0-second file on iOS/Safari (WebKit).
+      window.setTimeout(() => {
+        anchor.remove();
+        URL.revokeObjectURL(url);
+      }, 15000);
     } catch {
       setError('Something went wrong while rendering the click track.');
     } finally {

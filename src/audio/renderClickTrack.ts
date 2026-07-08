@@ -28,7 +28,18 @@ export async function renderClickTrack({
   sampleRate = 44100
 }: RenderClickTrackOptions): Promise<AudioBuffer> {
   const length = Math.max(1, Math.ceil(durationSeconds * sampleRate));
-  const offline = new OfflineAudioContext(1, length, sampleRate);
+
+  // Prefer the standard constructor; fall back to the webkit-prefixed one on
+  // older iOS/Safari, which still supports promise-based startRendering().
+  const w = window as unknown as {
+    OfflineAudioContext?: typeof OfflineAudioContext;
+    webkitOfflineAudioContext?: typeof OfflineAudioContext;
+  };
+  const Ctor = w.OfflineAudioContext ?? w.webkitOfflineAudioContext;
+  if (!Ctor) {
+    throw new Error('Offline audio rendering is not supported in this browser.');
+  }
+  const offline = new Ctor(1, length, sampleRate);
 
   const preset = getPreset(settings.preset);
   const beatDuration = beatDurationSeconds(settings.bpm, settings.denominator);
@@ -53,5 +64,9 @@ export async function renderClickTrack({
     }
   }
 
-  return offline.startRendering();
+  const rendered = await offline.startRendering();
+  if (rendered.length === 0) {
+    throw new Error('The rendered click track was empty.');
+  }
+  return rendered;
 }

@@ -50,3 +50,9 @@ export const DEFAULT_SETTINGS: MetronomeSettings = {
 
 /** localStorage key for persisted metronome settings. */
 export const SETTINGS_STORAGE_KEY = 'ctb.settings';
+
+/** localStorage key for the user's saved metronome configurations. */
+export const PRESETS_STORAGE_KEY = 'ctb.metronome.presets';
+
+/** Maximum number of metronome configurations a user can save. */
+export const MAX_PRESETS = 50;

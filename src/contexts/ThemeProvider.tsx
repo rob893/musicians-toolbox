@@ -13,7 +13,7 @@ const SYSTEM_DARK_QUERY = '(prefers-color-scheme: dark)';
 
 function readMode(): ThemeMode {
   const stored = localStorage.getItem(THEME_STORAGE_KEYS.mode);
-  return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
+  return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'dark';
 }
 
 function prefersDark(): boolean {
@@ -23,7 +23,7 @@ function prefersDark(): boolean {
 /**
  * Provides theme state (mode + primary/secondary colours) to the app.
  *
- * Mode defaults to `system` and toggles the `.dark` class on `<html>` based on
+ * Mode defaults to `dark` and toggles the `.dark` class on `<html>` based on
  * the resolved preference. The chosen colours are written as inline custom
  * properties on `<html>` so they override the stylesheet defaults in both light
  * and dark mode. All three values persist to localStorage.

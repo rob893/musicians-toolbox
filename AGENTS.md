@@ -12,7 +12,7 @@ detection).
 - `src/pages/` — route pages (`HomePage` dashboard, `SettingsPage`, `ComingSoonPage`, `NotFoundPage`)
 - `src/tools/` — one folder per tool (`metronome/`, `tuner/`), plus `registry.tsx` (the central tool registry)
 - `src/audio/` — Web Audio engine: `audioContext`, `clickSynth`, `renderClickTrack` (OfflineAudioContext), `wavEncoder`
-- `src/hooks/` — `useMetronome` (lookahead scheduler), `useTapTempo`, `useLocalStorage`, `useTuner` (mic + pitch detection)
+- `src/hooks/` — `useMetronome` (lookahead scheduler), `useTapTempo`, `useLocalStorage`, `useTuner` (mic + pitch detection), `useMetronomePresets` (saved configs)
 - `src/contexts/` — `ThemeProvider` + `themeContext` (mode + palette colours, persisted)
 - `src/constants/` — `metronome.ts` (ranges/presets), `palette.ts` (theme swatches)
 - `src/lib/` — pure helpers (`tempo.ts` math, `utils.ts` `cn`)
@@ -34,7 +34,8 @@ Run from repo root.
 ## Architecture
 
 - **Client-only.** No API, no auth, no axios/react-query. All state is local; user settings persist to
-  `localStorage` via `useLocalStorage`.
+  `localStorage` via `useLocalStorage`. The metronome also supports up to `MAX_PRESETS` (50) named
+  saved configurations via `useMetronomePresets` (key `ctb.metronome.presets`).
 - **Routing:** `HashRouter` (in `main.tsx`) — works on GitHub Pages with no server rewrites. Routes are
   generated from the tool registry in `App.tsx`.
 - **Tool registry (`src/tools/registry.tsx`) is the single source of truth.** The router, sidebar
@@ -52,7 +53,17 @@ Run from repo root.
   `Emphasis` (`accent`/`normal`/`weak`) that `scheduleClick` maps to pitch + gain tiers. Both the live
   scheduler and the offline renderer use `buildBeatPulses`, so export matches playback.
 - **Export format is WAV** (16-bit PCM via `wavEncoder`) — native, no encoder dependency. MP3 would
-  require a JS encoder (e.g. lamejs).
+  require a JS encoder (e.g. lamejs). On iOS the export uses the Web Share API (`navigator.share` with a
+  `File`) since Safari ignores the anchor `download` attribute; elsewhere it downloads via an anchor and
+  **defers `URL.revokeObjectURL`** (immediate revoke yields a 0-second file on WebKit).
+- **iOS/WebKit audio:** all iOS browsers are WebKit. `audioContext.ts` sets
+  `navigator.audioSession.type = 'playback'` (Safari 16.4+) and plays a 1-sample unlock buffer on the
+  first gesture so sound isn't muted by the silent switch. `renderClickTrack` falls back to
+  `webkitOfflineAudioContext`.
+- **PWA install:** `beforeinstallprompt` is captured app-wide in `lib/pwaInstall` (imported in
+  `main.tsx` so it isn't missed); `usePwaInstall` + `InstallControl` power the Install card on the
+  Settings page (iOS shows manual Add-to-Home-Screen guidance). Manifest `name`/`short_name` are both
+  "Musician's Toolbox"; iOS uses `apple-mobile-web-app-title` + `apple-touch-icon` in `index.html`.
 - **Tuner audio:** `useTuner` captures mic via `getUserMedia`, runs `autoCorrelate` (in `lib/pitch.ts`)
   on `AnalyserNode` time-domain data each rAF, and maps frequency → note/cents vs a persisted A4
   reference. It shares the singleton `AudioContext` but must **not** close it on stop (the metronome may
