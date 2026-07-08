@@ -91,11 +91,7 @@ function SelectLabel({ className, ...props }: ComponentProps<typeof SelectPrimit
 }
 
 /** A single selectable option. */
-function SelectItem({
-  className,
-  children,
-  ...props
-}: ComponentProps<typeof SelectPrimitive.Item>): React.JSX.Element {
+function SelectItem({ className, children, ...props }: ComponentProps<typeof SelectPrimitive.Item>): React.JSX.Element {
   return (
     <SelectPrimitive.Item
       data-slot="select-item"

@@ -18,10 +18,7 @@ export interface UseTapTempoOptions {
  * @param options Averaging window and reset behaviour.
  * @returns An object with a `tap` function to call on each tap.
  */
-export function useTapTempo(
-  onTempo: (bpm: number) => void,
-  options: UseTapTempoOptions = {}
-): { tap: () => void } {
+export function useTapTempo(onTempo: (bpm: number) => void, options: UseTapTempoOptions = {}): { tap: () => void } {
   const { maxTaps = 6, resetMs = 2000 } = options;
   const tapsRef = useRef<number[]>([]);
 

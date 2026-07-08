@@ -1,10 +1,4 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { DENOMINATORS, NUMERATOR_MAX, NUMERATOR_MIN } from '@/constants/metronome';
 import type { Denominator } from '@/types/metronome';
@@ -49,10 +43,7 @@ export function TimeSignatureControl({
 
         <span className="text-muted-foreground text-2xl leading-none">/</span>
 
-        <Select
-          value={String(denominator)}
-          onValueChange={value => onDenominatorChange(Number(value) as Denominator)}
-        >
+        <Select value={String(denominator)} onValueChange={value => onDenominatorChange(Number(value) as Denominator)}>
           <SelectTrigger className="w-20" aria-label="Note value">
             <SelectValue />
           </SelectTrigger>

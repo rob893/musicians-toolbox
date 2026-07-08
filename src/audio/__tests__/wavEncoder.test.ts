@@ -59,7 +59,14 @@ describe('audioBufferToWavBytes', () => {
   });
 
   it('interleaves stereo channels', () => {
-    const view = new DataView(audioBufferToWavBytes(fakeBuffer([[1, 0], [-1, 0]])));
+    const view = new DataView(
+      audioBufferToWavBytes(
+        fakeBuffer([
+          [1, 0],
+          [-1, 0]
+        ])
+      )
+    );
 
     expect(view.getUint16(22, true)).toBe(2); // channels
     expect(view.getInt16(44, true)).toBe(32767); // L[0] = +1

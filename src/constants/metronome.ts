@@ -16,7 +16,15 @@ export const DENOMINATORS: readonly Denominator[] = [4, 8];
 /** Synthesis parameters for each selectable click preset. */
 export const SOUND_PRESETS: readonly ClickPreset[] = [
   { id: 'beep', label: 'Beep', kind: 'tone', frequency: 880, accentFrequency: 1320, decay: 0.05, waveform: 'sine' },
-  { id: 'click', label: 'Click', kind: 'tone', frequency: 1000, accentFrequency: 1500, decay: 0.03, waveform: 'square' },
+  {
+    id: 'click',
+    label: 'Click',
+    kind: 'tone',
+    frequency: 1000,
+    accentFrequency: 1500,
+    decay: 0.03,
+    waveform: 'square'
+  },
   { id: 'woodblock', label: 'Woodblock', kind: 'noise', frequency: 1800, accentFrequency: 2600, decay: 0.04 }
 ];
 

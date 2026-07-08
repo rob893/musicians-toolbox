@@ -25,13 +25,6 @@ export default tseslint.config(
     }
   },
   {
-    files: ['src/components/ui/**/*.{ts,tsx}'],
-    rules: {
-      // shadcn/ui components co-locate their cva variant maps with the component.
-      'react-refresh/only-export-components': 'off'
-    }
-  },
-  {
     files: ['**/*.{test,spec}.{ts,tsx}', '**/__tests__/**/*.{ts,tsx}'],
     languageOptions: {
       globals: {

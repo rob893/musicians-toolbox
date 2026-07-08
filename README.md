@@ -35,13 +35,13 @@ Then open the printed local URL.
 
 ### Scripts
 
-| Command             | Description                          |
-| ------------------- | ------------------------------------ |
-| `npm run dev`       | Start the Vite dev server            |
-| `npm run build`     | Type-check and build for production  |
-| `npm run preview`   | Preview the production build locally |
-| `npm run lint`      | Lint with ESLint                     |
-| `npm run test`      | Run unit tests (Vitest)              |
+| Command           | Description                          |
+| ----------------- | ------------------------------------ |
+| `npm run dev`     | Start the Vite dev server            |
+| `npm run build`   | Type-check and build for production  |
+| `npm run preview` | Preview the production build locally |
+| `npm run lint`    | Lint with ESLint                     |
+| `npm run test`    | Run unit tests (Vitest)              |
 
 ## Project structure
 
