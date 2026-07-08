@@ -32,8 +32,9 @@
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
 
-  --border: #e2e8f0;
-  --input: #e2e8f0;
+  /* Soft, low-contrast hairlines that blend with the surface rather than drawing hard lines. */
+  --border: rgba(15, 23, 42, 0.08);
+  --input: rgba(15, 23, 42, 0.12);
   --ring: #94a3b8;
 }
 
@@ -58,8 +59,9 @@
   --destructive: #ef4444;
   --destructive-foreground: #0b0f19;
 
-  --border: #24304a;
-  --input: #24304a;
+  /* Soft, low-contrast hairlines so dividers/borders read as gentle edges, not harsh lines. */
+  --border: rgba(255, 255, 255, 0.06);
+  --input: rgba(255, 255, 255, 0.1);
   --ring: #475569;
 }
 

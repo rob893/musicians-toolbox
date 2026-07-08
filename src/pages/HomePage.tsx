@@ -10,7 +10,7 @@ export function HomePage(): React.JSX.Element {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-bold sm:text-3xl">Musician&apos;s Toolbox</h1>
-        <p className="text-muted-foreground mt-1">A growing set of browser-based tools for musicians.</p>
+        <p className="text-muted-foreground mt-1">A set of browser-based tools for musicians.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

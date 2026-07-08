@@ -2,16 +2,17 @@
 
 A **client-only** (no backend) collection of browser-based tools for musicians. React 19 + Vite +
 TypeScript + Tailwind v4 + shadcn/ui, shipped as an installable **PWA** and deployed to **GitHub
-Pages**. Everything runs locally in the browser — no account, no server, no uploads. The first tool is
-a **metronome** (with WAV click-track export); a **tuner** is next.
+Pages**. Everything runs locally in the browser — no account, no server, no uploads. The first tools
+are a **metronome** (with WAV click-track export) and a mic-based **tuner** (autocorrelation pitch
+detection).
 
 ## Repo Layout
 
-- `src/components/` — app shell + shared components (`AppLayout`, `SidebarNav`, `ThemeToggle`, `ThemeControl`); shadcn/ui primitives in `src/components/ui/`
+- `src/components/` — app shell + shared components (`AppLayout`, `SidebarNav`, `ThemeControl`); shadcn/ui primitives in `src/components/ui/`
 - `src/pages/` — route pages (`HomePage` dashboard, `SettingsPage`, `ComingSoonPage`, `NotFoundPage`)
-- `src/tools/` — one folder per tool (e.g. `metronome/`), plus `registry.tsx` (the central tool registry)
+- `src/tools/` — one folder per tool (`metronome/`, `tuner/`), plus `registry.tsx` (the central tool registry)
 - `src/audio/` — Web Audio engine: `audioContext`, `clickSynth`, `renderClickTrack` (OfflineAudioContext), `wavEncoder`
-- `src/hooks/` — `useMetronome` (lookahead scheduler), `useTapTempo`, `useLocalStorage`
+- `src/hooks/` — `useMetronome` (lookahead scheduler), `useTapTempo`, `useLocalStorage`, `useTuner` (mic + pitch detection)
 - `src/contexts/` — `ThemeProvider` + `themeContext` (mode + palette colours, persisted)
 - `src/constants/` — `metronome.ts` (ranges/presets), `palette.ts` (theme swatches)
 - `src/lib/` — pure helpers (`tempo.ts` math, `utils.ts` `cn`)
@@ -45,8 +46,20 @@ Run from repo root.
   against the `AudioContext` clock for drift-free timing. Export (`renderClickTrack`) uses an
   `OfflineAudioContext` with the **same** `clickSynth` path so the WAV matches what's heard. The
   `AudioContext` is a lazy singleton and must be resumed inside a user gesture (the play button).
+- **Beat subdivisions & accents:** each beat is expanded into pulses by pure `buildBeatPulses`
+  (`lib/subdivision.ts`) from the active subdivision (quarter/eighth/sixteenth/triplet/swing — swing =
+  offbeat on the 2/3 triplet position) and the `stressFirstBeat` setting. Each pulse carries an
+  `Emphasis` (`accent`/`normal`/`weak`) that `scheduleClick` maps to pitch + gain tiers. Both the live
+  scheduler and the offline renderer use `buildBeatPulses`, so export matches playback.
 - **Export format is WAV** (16-bit PCM via `wavEncoder`) — native, no encoder dependency. MP3 would
   require a JS encoder (e.g. lamejs).
+- **Tuner audio:** `useTuner` captures mic via `getUserMedia`, runs `autoCorrelate` (in `lib/pitch.ts`)
+  on `AnalyserNode` time-domain data each rAF, and maps frequency → note/cents vs a persisted A4
+  reference. It shares the singleton `AudioContext` but must **not** close it on stop (the metronome may
+  still use it) — it only stops the mic tracks and disconnects nodes. Note: the Web Audio typed-array
+  APIs need `Float32Array<ArrayBuffer>` (construct from an explicit `ArrayBuffer`), not the default
+  `Float32Array<ArrayBufferLike>`.
+- **Mobile first** all pages must be responsive and look good on mobile devices.
 
 ### Adding a new tool
 
@@ -64,8 +77,8 @@ omit `element`) until it's ready.
 - Implemented with Tailwind v4 `@theme inline` in `index.css`: `--primary`/`--secondary` (and their
   `-foreground` pairs) are overridden as inline custom properties on `documentElement` at runtime, so
   `bg-primary` / `bg-secondary` utilities re-colour live. `.dark` class is toggled on `documentElement`.
-- Theme lives on the **Settings** page (`ThemeControl`); the header has a quick `ThemeToggle` that
-  cycles modes.
+- Theme controls live solely on the **Settings** page (`ThemeControl`: mode segmented toggle + colour
+  swatches); there is no theme toggle in the nav/header.
 
 ## UI Components
 

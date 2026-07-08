@@ -43,7 +43,9 @@ export const DEFAULT_SETTINGS: MetronomeSettings = {
   beatsPerMeasure: 4,
   denominator: 4,
   preset: 'beep',
-  volume: 0.8
+  volume: 0.8,
+  stressFirstBeat: true,
+  subdivision: 'quarter'
 };
 
 /** localStorage key for persisted metronome settings. */

@@ -7,6 +7,15 @@ export type Denominator = 4 | 8;
 /** Theme mode; `system` follows the OS `prefers-color-scheme`. */
 export type ThemeMode = 'light' | 'dark' | 'system';
 
+/** Beat subdivision pattern applied within each beat. */
+export type Subdivision = 'quarter' | 'eighth' | 'sixteenth' | 'triplet' | 'swing';
+
+/**
+ * Relative emphasis of a scheduled click: `accent` (stressed downbeat),
+ * `normal` (a main beat), or `weak` (an in-between subdivision).
+ */
+export type Emphasis = 'accent' | 'normal' | 'weak';
+
 /**
  * Full set of user-controllable metronome settings. This is the shape that is
  * persisted to localStorage (transient playback state is kept separately).
@@ -22,6 +31,10 @@ export interface MetronomeSettings {
   preset: SoundPresetId;
   /** Output volume, 0–1. */
   volume: number;
+  /** When true, the first beat of each measure is accented; when false all main beats sound the same. */
+  stressFirstBeat: boolean;
+  /** Beat subdivision pattern (adds less-stressed clicks between beats). */
+  subdivision: Subdivision;
 }
 
 /**

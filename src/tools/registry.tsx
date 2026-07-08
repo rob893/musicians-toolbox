@@ -3,6 +3,7 @@ import type { LucideIcon } from 'lucide-react';
 import { Gauge, Music4 } from 'lucide-react';
 import { ComingSoonPage } from '@/pages/ComingSoonPage';
 import { MetronomeTool } from './metronome/MetronomeTool';
+import { TunerTool } from './tuner/TunerTool';
 
 /** Availability of a tool in the toolbox. */
 export type ToolStatus = 'available' | 'coming-soon';
@@ -45,7 +46,8 @@ export const TOOLS: readonly ToolDefinition[] = [
     description: 'Tune your instrument by microphone with real-time pitch detection.',
     path: '/tuner',
     icon: Gauge,
-    status: 'coming-soon'
+    status: 'available',
+    element: <TunerTool />
   }
 ];
 

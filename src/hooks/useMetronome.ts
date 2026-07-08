@@ -3,6 +3,7 @@ import { getAudioContext, resumeAudioContext } from '@/audio/audioContext';
 import { scheduleClick } from '@/audio/clickSynth';
 import { getPreset } from '@/constants/metronome';
 import { beatDurationSeconds } from '@/lib/tempo';
+import { buildBeatPulses } from '@/lib/subdivision';
 import type { MetronomeSettings } from '@/types/metronome';
 
 /** Timer tick interval (ms) at which the scheduler wakes to queue clicks. */
@@ -61,17 +62,24 @@ export function useMetronome(settings: MetronomeSettings): UseMetronomeResult {
     const preset = getPreset(current.preset);
 
     while (nextNoteTimeRef.current < ctx.currentTime + SCHEDULE_AHEAD_S) {
-      const when = nextNoteTimeRef.current;
+      const beatStart = nextNoteTimeRef.current;
       const beatInMeasure = beatRef.current % current.beatsPerMeasure;
-      const accent = beatInMeasure === 0;
+      const beatDuration = beatDurationSeconds(current.bpm, current.denominator);
 
-      scheduleClick(ctx, when, { preset, accent, volume: current.volume, destination: ctx.destination });
+      for (const pulse of buildBeatPulses(current.subdivision, beatInMeasure === 0, current.stressFirstBeat)) {
+        scheduleClick(ctx, beatStart + pulse.offset * beatDuration, {
+          preset,
+          emphasis: pulse.emphasis,
+          volume: current.volume,
+          destination: ctx.destination
+        });
+      }
 
-      const delayMs = Math.max(0, (when - ctx.currentTime) * 1000);
+      const delayMs = Math.max(0, (beatStart - ctx.currentTime) * 1000);
       const timeoutId = window.setTimeout(() => setCurrentBeat(beatInMeasure), delayMs);
       uiTimeoutsRef.current.push(timeoutId);
 
-      nextNoteTimeRef.current += beatDurationSeconds(current.bpm, current.denominator);
+      nextNoteTimeRef.current += beatDuration;
       beatRef.current += 1;
     }
   }, []);

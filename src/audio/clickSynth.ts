@@ -1,7 +1,14 @@
 import { clamp } from '@/lib/tempo';
-import type { ClickPreset } from '@/types/metronome';
+import type { ClickPreset, Emphasis } from '@/types/metronome';
 
 const noiseBuffers = new WeakMap<BaseAudioContext, AudioBuffer>();
+
+/** Per-emphasis synthesis tiers: accent uses the higher pitch and full gain; weak (subdivision) is quietest. */
+const EMPHASIS_TIERS: Record<Emphasis, { accentPitch: boolean; gain: number }> = {
+  accent: { accentPitch: true, gain: 1 },
+  normal: { accentPitch: false, gain: 0.72 },
+  weak: { accentPitch: false, gain: 0.4 }
+};
 
 /** Lazily creates (and caches per context) a short white-noise buffer for noise presets. */
 function getNoiseBuffer(ctx: BaseAudioContext): AudioBuffer {
@@ -22,8 +29,8 @@ function getNoiseBuffer(ctx: BaseAudioContext): AudioBuffer {
 export interface ScheduleClickOptions {
   /** Synthesis parameters for the click. */
   preset: ClickPreset;
-  /** Whether this is an accented downbeat (higher pitch + louder). */
-  accent: boolean;
+  /** Relative emphasis (accent downbeat, normal beat, or weak subdivision). */
+  emphasis: Emphasis;
   /** Output volume, 0–1. */
   volume: number;
   /** Node the click connects to (e.g. `ctx.destination`). */
@@ -40,10 +47,11 @@ export interface ScheduleClickOptions {
  * @param options Click configuration.
  */
 export function scheduleClick(ctx: BaseAudioContext, when: number, options: ScheduleClickOptions): void {
-  const { preset, accent, volume, destination } = options;
+  const { preset, emphasis, volume, destination } = options;
+  const tier = EMPHASIS_TIERS[emphasis];
 
-  const frequency = accent ? preset.accentFrequency : preset.frequency;
-  const peak = clamp(volume, 0, 1) * (accent ? 1 : 0.75);
+  const frequency = tier.accentPitch ? preset.accentFrequency : preset.frequency;
+  const peak = clamp(volume, 0, 1) * tier.gain;
   const start = when;
   const end = when + preset.decay;
 
