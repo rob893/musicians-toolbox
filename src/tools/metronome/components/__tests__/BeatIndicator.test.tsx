@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { BeatIndicator } from '@/components/BeatIndicator';
+import { BeatIndicator } from '@/tools/metronome/components/BeatIndicator';
 
 describe('BeatIndicator', () => {
   it('renders one dot per beat in the measure', () => {
